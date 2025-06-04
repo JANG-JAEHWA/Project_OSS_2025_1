@@ -19,7 +19,7 @@ class Calculator:
             ['4', '5', '6', '*'],
             ['1', '2', '3', '-'],
             ['0', '.', 'C', '+'],
-            ['=']
+            ['=', '⭠']
         ]
 
         for row in buttons:
@@ -37,6 +37,8 @@ class Calculator:
     def on_click(self, char):
         if char == 'C':
             self.expression = ""
+        elif char == '⭠':
+            self.expression = self.expression[:-1]
         elif char == '=':
             try:
                 self.expression = str(eval(self.expression))
