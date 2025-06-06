@@ -5,16 +5,18 @@ class Calculator:
     def __init__(self, root):
         self.root = root
         self.root.title("계산기")
-        self.root.geometry("300x420")
+        self.root.geometry("420x520")
 
         self.expression = ""
-
+        
         # 입력창
         self.entry = tk.Entry(root, font=("Arial", 24), justify="right",
                               bg="#f0f0f0", bd=0, relief="flat")
         self.entry.pack(fill="both", ipadx=8, ipady=15, padx=10, pady=10)
         separator = tk.Frame(root, height=2, bd=1, relief="sunken", bg="#999999")
         separator.pack(fill="x", padx=4, pady=(0, 5))
+        self.entry.bind("<Key>", self.key_input)
+        self.entry.focus_set()
 
         # 버튼 생성
         buttons = [
@@ -38,10 +40,33 @@ class Calculator:
                     text=char,
                     font=("Arial", 18),
                     fg = fg_color,
+                    width = 5,
+                    height = 2,
                     command=lambda ch=char: self.on_click(ch)
                 )
                 btn.pack(side="left", expand=True, fill="both", padx=4, pady=4)
 
+
+    # 키보드 입력
+    def key_input(self, event):
+        key = event.keysym
+        if key == "Return":
+            self.on_click("=")
+        elif key == "Escape":
+            self.on_click("C")
+        elif key == "BackSpace":
+            self.on_click("⭠")
+        elif key in ("plus", "minus", "asterisk", "slash"):
+            symbol = {'plus': '+', 'minus': '-', 'asterisk': '*', 'slash': '/'}[key]
+            self.on_click(symbol)
+        elif key == "period":
+            self.on_click(".")
+        elif key.isdigit():
+            self.on_click(key)
+        else:
+            return "break"
+        return "break"
+            
     def on_click(self, char):
         if not char:
             return
@@ -64,7 +89,11 @@ class Calculator:
             self.expression = self.expression[:-1] + char
         elif char == '=':
             try:
-                self.expression = str(eval(self.expression))
+                result = eval(self.expression)
+                if isinstance(result, float) and result.is_integer():
+                    self.expression = str(int(result))
+                else:
+                    self.expression = str(result)
             except ZeroDivisionError:
                 self.expression = "0으로 나눌 수 없습니다"
             except Exception:
